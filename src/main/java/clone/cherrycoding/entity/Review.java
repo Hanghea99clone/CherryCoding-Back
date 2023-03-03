@@ -1,5 +1,6 @@
 package clone.cherrycoding.entity;
 
+import clone.cherrycoding.dto.ReviewRequestDto;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
@@ -23,4 +24,16 @@ public class Review {
     @ManyToOne
     @JoinColumn(name = "userId")
     private User user;
+
+    public Review(String reviewTitle, String reviewContent, Lecture lecture, User user) {
+        this.reviewTitle = reviewTitle;
+        this.reviewContent = reviewContent;
+        this.lecture = lecture;
+        this.user = user;
+    }
+
+    public void update(ReviewRequestDto requestDto){
+        this.reviewTitle = requestDto.getReviewTitle();
+        this.reviewContent = requestDto.getReviewContent();
+    }
 }
