@@ -5,10 +5,7 @@ import clone.cherrycoding.dto.UserRequestDto;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
 
 @Entity(name = "users")
 @NoArgsConstructor
@@ -27,18 +24,19 @@ public class User {
 
     private String nickname;
 
+    @Enumerated(value = EnumType.STRING)
     private UserRoleEnum role;
 
-    public User(SignupRequestDto signupRequestDto, UserRoleEnum role) {
-        this.username = signupRequestDto.getUsername();
-        this.password = signupRequestDto.getPassword();
-        this.email = signupRequestDto.getEmail();
-        this.nickname = signupRequestDto.getNickname();
+    public User(String username, String password, String email, String nickname, UserRoleEnum role) {
+        this.username = username;
+        this.password = password;
+        this.email = email;
+        this.nickname = nickname;
         this.role = role;
     }
 
-    public void update(UserRequestDto requestDto) {
-        this.nickname = requestDto.getNickname();
-        this.password = requestDto.getNewPw();
+    public void update(String nickname, String newPw) {
+        this.nickname = nickname;
+        this.password = newPw;
     }
 }

@@ -45,13 +45,27 @@ public class LectureService {
 
         for (Lecture lecture : lectureList) {
             CurriculumResponseDto responseDto = CurriculumResponseDto.of(lecture);
+            boolean isEnrolled = false;
             if (user != null) {
-                responseDto.setEnrolled(enrollRepository.findByLectureIdAndUserId(lecture.getId(), user.getId()).isPresent());
+                isEnrolled = enrollRepository.findByLectureIdAndUserId(lecture.getId(), user.getId()).isPresent();
             }
+            responseDto.setEnrolled(isEnrolled);
             dto.add(responseDto);
         }
         return ResponseDto.success(dto);
 
+    }
+
+    public ResponseDto<CurriculumResponseDto> getDetail(Long curriculumId, User user) {
+        Lecture lecture = lectureRepository.findById(curriculumId).orElseThrow(NullPointerException::new);
+        CurriculumResponseDto dto = CurriculumResponseDto.of(lecture);
+        boolean isEnrolled = false;
+        if (user != null) {
+            isEnrolled = enrollRepository.findByLectureIdAndUserId(lecture.getId(), user.getId()).isPresent();
+        }
+        dto.setEnrolled(isEnrolled);
+
+        return ResponseDto.success(dto);
     }
 
     @Transactional

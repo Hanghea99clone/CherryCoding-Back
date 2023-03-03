@@ -1,10 +1,12 @@
 package clone.cherrycoding.service;
 
+import clone.cherrycoding.dto.ResponseDto;
 import clone.cherrycoding.dto.ReviewRequestDto;
 import clone.cherrycoding.entity.Lecture;
 import clone.cherrycoding.entity.Review;
 import clone.cherrycoding.entity.User;
 import clone.cherrycoding.entity.UserRoleEnum;
+import clone.cherrycoding.repository.LectureRepository;
 import clone.cherrycoding.repository.ReviewRepository;
 import clone.cherrycoding.repository.UserRepository;
 import clone.cherrycoding.security.UserDetailsImpl;
@@ -19,32 +21,36 @@ public class ReviewService {
 
     private final ReviewRepository reviewRepository;
     private final UserRepository userRepository;
-    private final LectureRepository LectureRepository;
+    private final LectureRepository lectureRepository;
+
     @Transactional
-    public void createReview(Long curriculumId, ReviewRequestDto requestDto, UserDetailsImpl userDetails) {
-        Lecture lecture = LectureRepository.findById(curriculumId).orElseThrow(NullPointerException::new);
+    public ResponseDto<String> createReview(Long curriculumId, ReviewRequestDto requestDto, UserDetailsImpl userDetails) {
+        Lecture lecture = lectureRepository.findById(curriculumId).orElseThrow(NullPointerException::new);
         Review review = new Review(
                 requestDto.getReviewTitle(), requestDto.getReviewContent(), lecture, userDetails.getUser());
 
         reviewRepository.save(review);
+        return ResponseDto.success("댓글 작성 완료");
     }
 
     @Transactional
-    public void updateReview(Long reviewId, ReviewRequestDto requestDto, UserDetailsImpl userDetails) {
+    public ResponseDto<String> updateReview(Long reviewId, ReviewRequestDto requestDto, UserDetailsImpl userDetails) {
         User user = userRepository.findByUsername(userDetails.getUsername()).orElseThrow(NullPointerException::new);
         Review review = reviewRepository.findById(reviewId).orElseThrow(NullPointerException::new);
 
         checkRole(user, userDetails);
         review.update(requestDto);
+        return ResponseDto.success("댓글 수정 완료");
     }
 
     @Transactional
-    public void deleteReview(Long reviewId, UserDetailsImpl userDetails) {
+    public ResponseDto<String> deleteReview(Long reviewId, UserDetailsImpl userDetails) {
         User user = userRepository.findByUsername(userDetails.getUsername()).orElseThrow(NullPointerException::new);
         Review review = reviewRepository.findById(reviewId).orElseThrow(NullPointerException::new);
 
         checkRole(user, userDetails);
         reviewRepository.deleteById(reviewId);
+        return ResponseDto.success("댓글 삭제 완료");
     }
 
 

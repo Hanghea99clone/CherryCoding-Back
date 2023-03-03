@@ -30,7 +30,7 @@ public class UserService {
     private final JwtUtil jwtUtil;
 
     @Transactional
-    public void signup(SignupRequestDto signupRequestDto) {
+    public ResponseDto<String> signup(SignupRequestDto signupRequestDto) {
         String username = signupRequestDto.getUsername();
         String password = passwordEncoder.encode(signupRequestDto.getPassword());
 
@@ -50,12 +50,13 @@ public class UserService {
             role = UserRoleEnum.ADMIN;
         }
 
-        userRepository.save(new User(signupRequestDto, role));
+        userRepository.save(new User(username, password, signupRequestDto.getEmail(), signupRequestDto.getNickname(), role));
 
-//        return ResponseDto.success(); // 반환 어떻게 할건지 결정
+        return ResponseDto.success("회원가입 성공");
     }
 
-    public void login(LoginRequestDto loginRequestDto){
+    @Transactional
+    public ResponseEntity<ResponseDto<String>> login(LoginRequestDto loginRequestDto){
         String username = loginRequestDto.getUsername();
         String password = loginRequestDto.getPassword();
 
@@ -71,12 +72,14 @@ public class UserService {
         HttpHeaders responseHeaders = new HttpHeaders();
         String token = jwtUtil.createToken(user.getUsername(), user.getRole());
         responseHeaders.set("Authorization",token);
-//        responseHeaders.add("userId", user.getId().toString());
 
+        return ResponseEntity.ok()
+                .headers(responseHeaders)
+                .body(ResponseDto.success("로그인 성공"));
     }
 
     @Transactional
-    public void update(Long userId, UserRequestDto requestDto, UserDetailsImpl userDetails) {
+    public ResponseDto<String> update(Long userId, UserRequestDto requestDto, UserDetailsImpl userDetails) {
         String nickname = requestDto.getNickname();
         String newPw = passwordEncoder.encode(requestDto.getNewPw());
 
@@ -96,12 +99,15 @@ public class UserService {
             throw  new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
         }
 
-        user.update(requestDto);
+        user.update(nickname, newPw);
+        return ResponseDto.success("회원정보 수정 완료");
     }
 
     @Transactional
-    public void delete(Long userId) {
+    public ResponseDto<String> delete(Long userId) {
         userRepository.deleteById(userId);
+
+        return ResponseDto.success("회원탈퇴 성공");
     }
 
     public void checkRole(User user, UserDetails userDetails) {

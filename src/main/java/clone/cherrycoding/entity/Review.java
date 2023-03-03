@@ -1,13 +1,15 @@
 package clone.cherrycoding.entity;
 
 import clone.cherrycoding.dto.ReviewRequestDto;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 
 @Entity
+@Getter
 @NoArgsConstructor
-public class Review {
+public class Review extends TimeStamped {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

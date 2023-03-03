@@ -40,6 +40,7 @@ public class SecurityConfig {
                 .antMatchers(
                         "/v2/api-docs", "/swagger-resources/**", "/api-docs", "/swagger-ui/index.html", "/swagger-ui.html", "/webjars/**", "/swagger/**"   // swagger
                 )
+                .requestMatchers(PathRequest.toH2Console())
                 .requestMatchers(PathRequest.toStaticResources().atCommonLocations());
     }
 
@@ -52,7 +53,7 @@ public class SecurityConfig {
 
         http.cors();
 
-        http.authorizeRequests().antMatchers("/user/**").permitAll()
+        http.authorizeRequests().antMatchers("/api/user/**").permitAll()
                 .antMatchers(HttpMethod.GET, "/api/**").permitAll()
                 .anyRequest().authenticated()
                 // JWT 인증/인가를 사용하기 위한 설정

@@ -20,5 +20,5 @@ public class SignupRequestDto {
     private String email;
     private String adminToken;
 
-    private boolean isAdmin;
+    private boolean admin;
 }

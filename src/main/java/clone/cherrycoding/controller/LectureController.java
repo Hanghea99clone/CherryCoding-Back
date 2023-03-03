@@ -36,8 +36,17 @@ public class LectureController {
         return lectureService.getCurriculum(user);
     }
 
+    @GetMapping("/curriculum/{curriculumId}")
+    public ResponseDto<CurriculumResponseDto> getDetail(@PathVariable Long curriculumId, @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        User user = null;
+        if (userDetails != null) {
+            user = userDetails.getUser();
+        }
+        return lectureService.getDetail(curriculumId, user);
+    }
+
     @PostMapping("/lecture")
-    public ResponseDto<String> addLecture(@RequestBody LectureRequestDto requestDto,
+    public ResponseDto<String> addLecture(@RequestPart LectureRequestDto requestDto,
                                      @RequestPart(value = "image") MultipartFile multipartFile,
                                      @AuthenticationPrincipal UserDetailsImpl userDetails) throws IOException {
 
@@ -46,7 +55,7 @@ public class LectureController {
 
     @PutMapping("/curriculum/{curriculumId}")
     public ResponseDto<String> updateLecture(@PathVariable Long curriculumId,
-                                             @RequestBody LectureRequestDto requestDto,
+                                             @RequestPart LectureRequestDto requestDto,
                                              @RequestPart(value = "image") MultipartFile multipartFile,
                                              @AuthenticationPrincipal UserDetailsImpl userDetails) throws IOException {
         return lectureService.update(curriculumId, requestDto, multipartFile, userDetails.getUser());

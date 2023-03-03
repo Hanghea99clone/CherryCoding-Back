@@ -8,27 +8,20 @@ import org.springframework.http.HttpStatus;
 @Getter
 @AllArgsConstructor
 public class ResponseDto<T> {
-    private boolean success;
+    private int statusCode;
 
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private T data;
 
-    @JsonInclude(JsonInclude.Include.NON_NULL)
-    private Error error;
-
     public static <T> ResponseDto<T> success(T data) {
 
-        return new ResponseDto<>(true, data, null);
-    }
-    public static <T> ResponseDto<T> fail(int status, HttpStatus httpStatus, String message){
-        return new ResponseDto<>(false, null, new Error(status, httpStatus, message));
+        return new ResponseDto<>(200, data);
     }
 
     @Getter
     @AllArgsConstructor
     static class Error {
-        private final int status;
-        private final HttpStatus httpStatus;
+        private final int statusCode;
         private final String message;
     }
 }
