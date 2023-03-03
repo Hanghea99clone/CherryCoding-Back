@@ -18,4 +18,9 @@ public class Enroll {
     @ManyToOne
     @JoinColumn(name = "lectureId")
     private Lecture lecture;
+
+    public Enroll (User user, Lecture lecture) {
+        this.user = user;
+        this.lecture = lecture;
+    }
 }
