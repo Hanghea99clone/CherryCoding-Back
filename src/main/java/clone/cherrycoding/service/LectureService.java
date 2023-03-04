@@ -1,9 +1,7 @@
 package clone.cherrycoding.service;
 
-import clone.cherrycoding.dto.CurriculumResponseDto;
-import clone.cherrycoding.dto.LectureRequestDto;
-import clone.cherrycoding.dto.LectureResponseDto;
-import clone.cherrycoding.dto.ResponseDto;
+import clone.cherrycoding.dto.*;
+import clone.cherrycoding.entity.Enroll;
 import clone.cherrycoding.entity.Lecture;
 import clone.cherrycoding.entity.User;
 import clone.cherrycoding.repository.EnrollRepository;
@@ -56,15 +54,28 @@ public class LectureService {
 
     }
 
-    public ResponseDto<CurriculumResponseDto> getDetail(Long curriculumId, User user) {
+    @Transactional
+    public ResponseDto<DetailResponseDto> getDetail(Long curriculumId, User user) {
         Lecture lecture = lectureRepository.findById(curriculumId).orElseThrow(NullPointerException::new);
-        CurriculumResponseDto dto = CurriculumResponseDto.of(lecture);
+        DetailResponseDto dto = DetailResponseDto.of(lecture);
         boolean isEnrolled = false;
         if (user != null) {
             isEnrolled = enrollRepository.findByLectureIdAndUserId(lecture.getId(), user.getId()).isPresent();
         }
         dto.setEnrolled(isEnrolled);
 
+        return ResponseDto.success(dto);
+    }
+
+    @Transactional
+    public ResponseDto<List<CurriculumResponseDto>> getUserCurriculum(User user) {
+        List<Enroll> enrolls = enrollRepository.findAllByUserId(user.getId());
+        List<CurriculumResponseDto> dto = new ArrayList<>();
+        for (Enroll enroll : enrolls) {
+            CurriculumResponseDto responseDto = CurriculumResponseDto.of(enroll.getLecture());
+            responseDto.setEnrolled(true);
+            dto.add(responseDto);
+        }
         return ResponseDto.success(dto);
     }
 
@@ -87,8 +98,8 @@ public class LectureService {
 
     @Transactional
     public ResponseDto<String> delete(Long curriculumId, User user) {
-        lectureRepository.findByIdAndUserId(curriculumId, user.getId()).orElseThrow(NullPointerException::new);
-        lectureRepository.deleteById(curriculumId);
+        Lecture lecture = lectureRepository.findByIdAndUserId(curriculumId, user.getId()).orElseThrow(NullPointerException::new);
+        lectureRepository.deleteById(lecture.getId());
 
         return ResponseDto.success("강의 삭제 성공");
     }

@@ -1,9 +1,6 @@
 package clone.cherrycoding.controller;
 
-import clone.cherrycoding.dto.CurriculumResponseDto;
-import clone.cherrycoding.dto.LectureRequestDto;
-import clone.cherrycoding.dto.LectureResponseDto;
-import clone.cherrycoding.dto.ResponseDto;
+import clone.cherrycoding.dto.*;
 import clone.cherrycoding.entity.User;
 import clone.cherrycoding.security.UserDetailsImpl;
 import clone.cherrycoding.service.LectureService;
@@ -37,12 +34,17 @@ public class LectureController {
     }
 
     @GetMapping("/curriculum/{curriculumId}")
-    public ResponseDto<CurriculumResponseDto> getDetail(@PathVariable Long curriculumId, @AuthenticationPrincipal UserDetailsImpl userDetails) {
+    public ResponseDto<DetailResponseDto> getDetail(@PathVariable Long curriculumId, @AuthenticationPrincipal UserDetailsImpl userDetails) {
         User user = null;
         if (userDetails != null) {
             user = userDetails.getUser();
         }
         return lectureService.getDetail(curriculumId, user);
+    }
+
+    @GetMapping("/user-curriculum")
+    public ResponseDto<List<CurriculumResponseDto>> getUserCurriculum(@AuthenticationPrincipal UserDetailsImpl userDetails) {
+        return lectureService.getUserCurriculum(userDetails.getUser());
     }
 
     @PostMapping("/lecture")

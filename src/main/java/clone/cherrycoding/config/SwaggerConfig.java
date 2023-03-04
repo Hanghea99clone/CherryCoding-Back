@@ -19,9 +19,6 @@ public class SwaggerConfig implements WebMvcConfigurer {
     private ApiInfo commonInfo() {
         return new ApiInfoBuilder()
                 .title("USER API")
-                //.description("")
-                //.license("leeys")
-                //.licenseUrl("http://leeys.tistory.com")
                 .version("1.0")
                 .build();
     }
@@ -32,7 +29,6 @@ public class SwaggerConfig implements WebMvcConfigurer {
                 .groupName("USER")
                 .useDefaultResponseMessages(false)
                 .select()
-                //.apis(RequestHandlerSelectors.any())
                 .apis(RequestHandlerSelectors.basePackage("clone.cherrycoding"))
                 .paths(PathSelectors.any())
                 .build()
