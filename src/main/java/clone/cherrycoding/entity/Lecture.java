@@ -1,7 +1,6 @@
 package clone.cherrycoding.entity;
 
 import clone.cherrycoding.dto.LectureRequestDto;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 

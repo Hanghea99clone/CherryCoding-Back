@@ -3,6 +3,7 @@ package clone.cherrycoding.controller;
 import clone.cherrycoding.dto.*;
 import clone.cherrycoding.entity.User;
 import clone.cherrycoding.security.UserDetailsImpl;
+import clone.cherrycoding.security.UserDetailsServiceImpl;
 import clone.cherrycoding.service.LectureService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -18,6 +19,7 @@ import java.util.List;
 public class LectureController {
 
     private final LectureService lectureService;
+    private final UserDetailsServiceImpl userDetailsService;
 
     @GetMapping("/lecture")
     public ResponseDto<List<LectureResponseDto>> getLecture() {
@@ -29,28 +31,21 @@ public class LectureController {
                                                                   @RequestParam int size,
                                                                   @RequestParam(required = false, defaultValue = "createdAt") String sortBy,
                                                                   @AuthenticationPrincipal UserDetailsImpl userDetails) {
-        User user = null;
-        if (userDetails != null) {
-            user = userDetails.getUser();
-        }
-        return lectureService.getCurriculum(page, size, sortBy, user);
+        final User user = userDetailsService.getUser(userDetails);
+
+        return lectureService.getCurriculum(page - 1, size, sortBy, user);
     }
 
     @GetMapping("/curriculum/{curriculumId}")
     public ResponseDto<DetailResponseDto> getDetail(@PathVariable Long curriculumId, @AuthenticationPrincipal UserDetailsImpl userDetails) {
-        User user = null;
-        if (userDetails != null) {
-            user = userDetails.getUser();
-        }
+        final User user = userDetailsService.getUser(userDetails);
+
         return lectureService.getDetail(curriculumId, user);
     }
 
     @GetMapping("/user-curriculum")
-    public ResponseDto<List<CurriculumResponseDto>> getUserCurriculum(@RequestParam int page,
-                                                                      @RequestParam int size,
-                                                                      @RequestParam(required = false, defaultValue = "modifiedAt") String sortBy,
-                                                                      @AuthenticationPrincipal UserDetailsImpl userDetails) {
-        return lectureService.getUserCurriculum(page, size, sortBy, userDetails.getUser());
+    public ResponseDto<List<CurriculumResponseDto>> getUserCurriculum(@AuthenticationPrincipal UserDetailsImpl userDetails) {
+        return lectureService.getUserCurriculum(userDetails.getUser());
     }
 
     @PostMapping("/lecture")
@@ -66,6 +61,7 @@ public class LectureController {
                                              @RequestPart LectureRequestDto requestDto,
                                              @RequestPart(value = "image") MultipartFile multipartFile,
                                              @AuthenticationPrincipal UserDetailsImpl userDetails) throws IOException {
+
         return lectureService.update(curriculumId, requestDto, multipartFile, userDetails.getUser());
     }
 

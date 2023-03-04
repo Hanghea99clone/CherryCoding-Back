@@ -35,6 +35,17 @@ public class CurriculumResponseDto {
                 .build();
     }
 
+    public static CurriculumResponseDto.CurriculumResponseDtoBuilder builderOf(Lecture lecture) {
+        return CurriculumResponseDto.builder()
+                .id(lecture.getId())
+                .title(lecture.getTitle())
+                .content(lecture.getContent())
+                .imageUrl(lecture.getImageUrl())
+                .price(lecture.getPrice())
+                .reviewCnt(lecture.getReviewCnt())
+                .studentCnt(lecture.getEnrollCnt());
+    }
+
     public void setEnrolled(Boolean enrolled) {
         isEnrolled = enrolled;
     }

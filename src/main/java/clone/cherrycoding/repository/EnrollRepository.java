@@ -1,6 +1,8 @@
 package clone.cherrycoding.repository;
 
 import clone.cherrycoding.entity.Enroll;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
@@ -13,4 +15,6 @@ public interface EnrollRepository extends JpaRepository<Enroll, Long> {
     List<Enroll> findAllByUserId(Long userId);
 
     void deleteEnrollByLectureIdAndUserId(Long lectureId, Long userId);
+
+    Page<Enroll> findByUserId(Long userId, Pageable pageable);
 }
