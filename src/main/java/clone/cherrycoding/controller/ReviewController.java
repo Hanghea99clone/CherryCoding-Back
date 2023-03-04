@@ -2,7 +2,9 @@ package clone.cherrycoding.controller;
 
 import clone.cherrycoding.dto.ResponseDto;
 import clone.cherrycoding.dto.ReviewRequestDto;
+import clone.cherrycoding.entity.Lecture;
 import clone.cherrycoding.entity.User;
+import clone.cherrycoding.repository.LectureRepository;
 import clone.cherrycoding.security.UserDetailsImpl;
 import clone.cherrycoding.service.ReviewService;
 import lombok.RequiredArgsConstructor;
@@ -24,6 +26,7 @@ public class ReviewController {
     public ResponseDto<String> updateReview(@PathVariable Long reviewId, @RequestBody ReviewRequestDto requestDto, @AuthenticationPrincipal UserDetailsImpl userDetails){
         return reviewService.updateReview(reviewId, requestDto, userDetails);
     }
+
     @DeleteMapping("/{reviewId}")
     public ResponseDto<String> deleteReview(@PathVariable Long reviewId, @AuthenticationPrincipal UserDetailsImpl userDetails){
         return reviewService.deleteReview(reviewId, userDetails);

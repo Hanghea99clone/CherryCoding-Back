@@ -26,6 +26,10 @@ public class Lecture extends TimeStamped {
 
     private int price;
 
+    private int reviewCnt;
+
+    private int enrollCnt;
+
     @ManyToOne
     @JoinColumn(name = "userId")
     private User user;
@@ -49,5 +53,13 @@ public class Lecture extends TimeStamped {
         this.content = requestDto.getContent();
         this.imageUrl = imageUrl;
         this.price = requestDto.getPrice();
+    }
+
+    public void review(int count) {
+        this.reviewCnt = count;
+    }
+
+    public void enroll(int count) {
+        this.enrollCnt = count;
     }
 }

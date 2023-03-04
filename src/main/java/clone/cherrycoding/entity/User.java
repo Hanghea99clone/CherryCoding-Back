@@ -35,8 +35,7 @@ public class User {
         this.role = role;
     }
 
-    public void update(String nickname, String newPw) {
-        this.nickname = nickname;
+    public void update(String newPw) {
         this.password = newPw;
     }
 }

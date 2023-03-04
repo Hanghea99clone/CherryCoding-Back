@@ -30,8 +30,8 @@ public class CurriculumResponseDto {
                 .content(lecture.getContent())
                 .imageUrl(lecture.getImageUrl())
                 .price(lecture.getPrice())
-                .reviewCnt(lecture.getReviewList().size())
-                .studentCnt(lecture.getEnrollList().size())
+                .reviewCnt(lecture.getReviewCnt())
+                .studentCnt(lecture.getEnrollCnt())
                 .build();
     }
 

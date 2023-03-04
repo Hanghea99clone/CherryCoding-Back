@@ -24,10 +24,12 @@ public class EnrollService {
 
         if (enrollRepository.findByLectureIdAndUserId(curriculumId, user.getId()).isPresent()) {
             enrollRepository.deleteEnrollByLectureIdAndUserId(curriculumId, user.getId());
+            lecture.enroll(lecture.getEnrollCnt() - 1);
             return ResponseDto.success("수강 취소 완료");
         }
 
         enrollRepository.save(new Enroll(user, lecture));
+        lecture.enroll(lecture.getEnrollCnt() + 1);
         return ResponseDto.success("수강 신청 완료");
     }
 }

@@ -25,12 +25,15 @@ public class LectureController {
     }
 
     @GetMapping("/curriculum")
-    public ResponseDto<List<CurriculumResponseDto>> getCurriculum(@AuthenticationPrincipal UserDetailsImpl userDetails) {
+    public ResponseDto<List<CurriculumResponseDto>> getCurriculum(@RequestParam int page,
+                                                                  @RequestParam int size,
+                                                                  @RequestParam(required = false, defaultValue = "createdAt") String sortBy,
+                                                                  @AuthenticationPrincipal UserDetailsImpl userDetails) {
         User user = null;
         if (userDetails != null) {
             user = userDetails.getUser();
         }
-        return lectureService.getCurriculum(user);
+        return lectureService.getCurriculum(page, size, sortBy, user);
     }
 
     @GetMapping("/curriculum/{curriculumId}")
@@ -43,14 +46,17 @@ public class LectureController {
     }
 
     @GetMapping("/user-curriculum")
-    public ResponseDto<List<CurriculumResponseDto>> getUserCurriculum(@AuthenticationPrincipal UserDetailsImpl userDetails) {
-        return lectureService.getUserCurriculum(userDetails.getUser());
+    public ResponseDto<List<CurriculumResponseDto>> getUserCurriculum(@RequestParam int page,
+                                                                      @RequestParam int size,
+                                                                      @RequestParam(required = false, defaultValue = "modifiedAt") String sortBy,
+                                                                      @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        return lectureService.getUserCurriculum(page, size, sortBy, userDetails.getUser());
     }
 
     @PostMapping("/lecture")
     public ResponseDto<String> addLecture(@RequestPart LectureRequestDto requestDto,
-                                     @RequestPart(value = "image") MultipartFile multipartFile,
-                                     @AuthenticationPrincipal UserDetailsImpl userDetails) throws IOException {
+                                          @RequestPart(value = "image") MultipartFile multipartFile,
+                                          @AuthenticationPrincipal UserDetailsImpl userDetails) throws IOException {
 
         return lectureService.add(requestDto, multipartFile, userDetails.getUser());
     }

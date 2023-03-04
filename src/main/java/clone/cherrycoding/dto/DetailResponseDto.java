@@ -28,8 +28,8 @@ public class DetailResponseDto {
                 .content(lecture.getContent())
                 .imageUrl(lecture.getImageUrl())
                 .price(lecture.getPrice())
-                .reviewCnt(lecture.getReviewList().size())
-                .studentCnt(lecture.getEnrollList().size())
+                .reviewCnt(lecture.getReviewCnt())
+                .studentCnt(lecture.getEnrollCnt())
                 .reviewList(lecture.getReviewList().stream().sorted((a, b) ->
                                 b.getModifiedAt().compareTo(a.getModifiedAt()))
                         .map(ReviewResponseDto::new)

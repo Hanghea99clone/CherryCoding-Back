@@ -8,6 +8,11 @@ import clone.cherrycoding.repository.EnrollRepository;
 import clone.cherrycoding.repository.LectureRepository;
 import clone.cherrycoding.s3.S3Uploader;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -16,6 +21,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class LectureService {
@@ -26,7 +32,7 @@ public class LectureService {
 
     @Transactional
     public ResponseDto<List<LectureResponseDto>> getLecture() {
-        List<Lecture> lectureList = lectureRepository.findAllByOrderByModifiedAtDesc();
+        List<Lecture> lectureList = lectureRepository.findAllByOrderByCreatedAtDesc();
         List<LectureResponseDto> dto = new ArrayList<>();
 
         for (Lecture lecture : lectureList) {
@@ -37,8 +43,13 @@ public class LectureService {
     }
 
     @Transactional
-    public ResponseDto<List<CurriculumResponseDto>> getCurriculum(User user) {
-        List<Lecture> lectureList = lectureRepository.findAllByOrderByModifiedAtDesc();
+    public ResponseDto<List<CurriculumResponseDto>> getCurriculum(int page, int size, String sortBy, User user) {
+
+        Sort sort = Sort.by(Sort.Direction.DESC, sortBy);
+        Pageable pageable = PageRequest.of(page, size, sort);
+        Page<Lecture> lecturePage = lectureRepository.findAll(pageable);
+
+        List<Lecture> lectureList = lecturePage.getContent();
         List<CurriculumResponseDto> dto = new ArrayList<>();
 
         for (Lecture lecture : lectureList) {
@@ -68,7 +79,12 @@ public class LectureService {
     }
 
     @Transactional
-    public ResponseDto<List<CurriculumResponseDto>> getUserCurriculum(User user) {
+    public ResponseDto<List<CurriculumResponseDto>> getUserCurriculum(int page, int size, String sortBy, User user) {
+        Sort sort = Sort.by(Sort.Direction.DESC, sortBy);
+        Pageable pageable = PageRequest.of(page, size, sort);
+        Page<Lecture> lecturePage = lectureRepository.findAll(pageable);
+
+        List<Lecture> lectureList = lecturePage.getContent();
         List<Enroll> enrolls = enrollRepository.findAllByUserId(user.getId());
         List<CurriculumResponseDto> dto = new ArrayList<>();
         for (Enroll enroll : enrolls) {

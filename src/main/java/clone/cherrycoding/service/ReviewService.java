@@ -26,6 +26,7 @@ public class ReviewService {
     @Transactional
     public ResponseDto<String> createReview(Long curriculumId, ReviewRequestDto requestDto, UserDetailsImpl userDetails) {
         Lecture lecture = lectureRepository.findById(curriculumId).orElseThrow(NullPointerException::new);
+        lecture.review(lecture.getReviewCnt() + 1);
         Review review = new Review(
                 requestDto.getReviewTitle(), requestDto.getReviewContent(), lecture, userDetails.getUser());
 
@@ -47,7 +48,7 @@ public class ReviewService {
     public ResponseDto<String> deleteReview(Long reviewId, UserDetailsImpl userDetails) {
         User user = userRepository.findByUsername(userDetails.getUsername()).orElseThrow(NullPointerException::new);
         Review review = reviewRepository.findById(reviewId).orElseThrow(NullPointerException::new);
-
+        review.getLecture().review(review.getLecture().getReviewCnt() - 1);
         checkRole(user, userDetails);
         reviewRepository.deleteById(reviewId);
         return ResponseDto.success("댓글 삭제 완료");

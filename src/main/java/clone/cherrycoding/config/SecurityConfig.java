@@ -40,9 +40,8 @@ public class SecurityConfig {
                 .mvcMatchers("/api-docs")
                 .mvcMatchers("/docs/**")
                 .mvcMatchers("/version")
-                .mvcMatchers("/h2-console/**")
                 .mvcMatchers("/public")
-                .antMatchers("/swagger-ui/**", "/v3/api-docs/**");
+                .antMatchers("/swagger-ui/**", "/v3/api-docs/**", "/h2-console/**");
     }
 
     @Bean

@@ -1,9 +1,6 @@
 package clone.cherrycoding.controller;
 
-import clone.cherrycoding.dto.LoginRequestDto;
-import clone.cherrycoding.dto.ResponseDto;
-import clone.cherrycoding.dto.SignupRequestDto;
-import clone.cherrycoding.dto.UserRequestDto;
+import clone.cherrycoding.dto.*;
 import clone.cherrycoding.security.UserDetailsImpl;
 import clone.cherrycoding.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -26,7 +23,7 @@ public class UserController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<ResponseDto<String>> login(@RequestBody LoginRequestDto loginRequestDto) {
+    public ResponseEntity<ResponseDto<LoginResponseDto>> login(@RequestBody LoginRequestDto loginRequestDto) {
         return userService.login(loginRequestDto);
     }
 

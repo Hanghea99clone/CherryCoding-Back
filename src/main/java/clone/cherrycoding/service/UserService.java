@@ -1,9 +1,6 @@
 package clone.cherrycoding.service;
 
-import clone.cherrycoding.dto.LoginRequestDto;
-import clone.cherrycoding.dto.ResponseDto;
-import clone.cherrycoding.dto.SignupRequestDto;
-import clone.cherrycoding.dto.UserRequestDto;
+import clone.cherrycoding.dto.*;
 import clone.cherrycoding.entity.User;
 import clone.cherrycoding.entity.UserRoleEnum;
 import clone.cherrycoding.jwt.JwtUtil;
@@ -56,7 +53,7 @@ public class UserService {
     }
 
     @Transactional
-    public ResponseEntity<ResponseDto<String>> login(LoginRequestDto loginRequestDto){
+    public ResponseEntity<ResponseDto<LoginResponseDto>> login(LoginRequestDto loginRequestDto){
         String username = loginRequestDto.getUsername();
         String password = loginRequestDto.getPassword();
 
@@ -73,14 +70,15 @@ public class UserService {
         String token = jwtUtil.createToken(user.getUsername(), user.getRole());
         responseHeaders.set("Authorization",token);
 
+        boolean isAdmin = user.getRole() == UserRoleEnum.ADMIN;
+
         return ResponseEntity.ok()
                 .headers(responseHeaders)
-                .body(ResponseDto.success("로그인 성공"));
+                .body(ResponseDto.success(LoginResponseDto.of(user.getNickname(), isAdmin)));
     }
 
     @Transactional
     public ResponseDto<String> update(Long userId, UserRequestDto requestDto, UserDetailsImpl userDetails) {
-        String nickname = requestDto.getNickname();
         String newPw = passwordEncoder.encode(requestDto.getNewPw());
 
         User user = userRepository.findById(userId).orElseThrow(
@@ -99,7 +97,7 @@ public class UserService {
             throw  new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
         }
 
-        user.update(nickname, newPw);
+        user.update(newPw);
         return ResponseDto.success("회원정보 수정 완료");
     }
 
