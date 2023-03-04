@@ -37,11 +37,12 @@ public class SecurityConfig {
     public WebSecurityCustomizer webSecurityCustomizer() {
         // h2-console 사용 및 resources 접근 허용 설정 //필터 거치지 않고 패스
         return (web) -> web.ignoring()
-                .antMatchers(
-                        "/v2/api-docs", "/swagger-resources/**", "/api-docs", "/swagger-ui/index.html", "/swagger-ui.html", "/webjars/**", "/swagger/**"   // swagger
-                )
-                .requestMatchers(PathRequest.toH2Console())
-                .requestMatchers(PathRequest.toStaticResources().atCommonLocations());
+                .mvcMatchers("/api-docs")
+                .mvcMatchers("/docs/**")
+                .mvcMatchers("/version")
+                .mvcMatchers("/h2-console/**")
+                .mvcMatchers("/public")
+                .antMatchers("/swagger-ui/**", "/v3/api-docs/**");
     }
 
     @Bean

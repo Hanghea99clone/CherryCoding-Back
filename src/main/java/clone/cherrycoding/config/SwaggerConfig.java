@@ -1,55 +1,39 @@
 package clone.cherrycoding.config;
 
+import io.swagger.v3.oas.models.Components;
+import io.swagger.v3.oas.models.OpenAPI;
+import io.swagger.v3.oas.models.info.Info;
+import io.swagger.v3.oas.models.security.SecurityRequirement;
+import io.swagger.v3.oas.models.security.SecurityScheme;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
-import springfox.documentation.builders.ApiInfoBuilder;
-import springfox.documentation.builders.PathSelectors;
-import springfox.documentation.builders.RequestHandlerSelectors;
-import springfox.documentation.service.ApiInfo;
-import springfox.documentation.spi.DocumentationType;
-import springfox.documentation.spring.web.plugins.Docket;
-import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
 
 @Configuration
-@EnableSwagger2
-public class SwaggerConfig implements WebMvcConfigurer {
-    private ApiInfo commonInfo() {
-        return new ApiInfoBuilder()
-                .title("USER API")
-                .version("1.0")
-                .build();
-    }
+public class SwaggerConfig {
 
     @Bean
-    public Docket allApi() {
-        return new Docket(DocumentationType.SWAGGER_2)
-                .groupName("USER")
-                .useDefaultResponseMessages(false)
-                .select()
-                .apis(RequestHandlerSelectors.basePackage("clone.cherrycoding"))
-                .paths(PathSelectors.any())
-                .build()
-                .apiInfo(commonInfo());
-    }
+    public OpenAPI openAPI() {
 
-    @Override
-    public void addResourceHandlers(ResourceHandlerRegistry registry) {
-        registry.addResourceHandler("swagger-ui.html")
-                .addResourceLocations("classpath:/META-INF/resources/");
-        registry.addResourceHandler("/webjars/**")
-                .addResourceLocations("classpath:/META-INF/resources/webjars/");
-    }
+        Info info = new Info()
+                .title("Cherry Coding") // 타이틀
+                .version("1.0") // 문서 버전
+                .description("post api docs"); // 문서 설명
 
-    @Bean
-    public Docket swagger() {
-        return new Docket(DocumentationType.SWAGGER_2)
-                .select()
-                .apis(RequestHandlerSelectors.any())
-                .paths(PathSelectors.any())
-                .build();
-    }
 
+        // SecuritySecheme명
+        String jwtSchemeName = "Authorization";
+        // API 요청헤더에 인증정보 포함
+        SecurityRequirement securityRequirement = new SecurityRequirement().addList(jwtSchemeName);
+        // SecuritySchemes 등록
+        Components components = new Components()
+                .addSecuritySchemes(jwtSchemeName, new SecurityScheme()
+                        .name(jwtSchemeName)
+                        .type(SecurityScheme.Type.HTTP) // HTTP 방식
+                        .scheme("bearer")
+                        .bearerFormat("JWT"));
+
+        return new OpenAPI().info(info).addSecurityItem(securityRequirement)
+                .components(components);
+    }
 }
