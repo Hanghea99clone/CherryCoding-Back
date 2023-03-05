@@ -1,7 +1,5 @@
 package clone.cherrycoding.entity;
 
-import clone.cherrycoding.dto.SignupRequestDto;
-import clone.cherrycoding.dto.UserRequestDto;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -35,7 +33,7 @@ public class User {
         this.role = role;
     }
 
-    public void update(String newPw) {
-        this.password = newPw;
+    public void setPassword(String password) {
+        this.password = password;
     }
 }

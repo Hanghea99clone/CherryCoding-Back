@@ -7,18 +7,17 @@ import clone.cherrycoding.exception.CustomException;
 import clone.cherrycoding.exception.ErrorCode;
 import clone.cherrycoding.jwt.JwtUtil;
 import clone.cherrycoding.repository.UserRepository;
-import clone.cherrycoding.security.UserDetailsImpl;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
+import javax.transaction.Transactional;
 import java.util.Optional;
 
-
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class UserService {
@@ -85,19 +84,21 @@ public class UserService {
 
     @Transactional
     public ResponseDto<String> update(UserRequestDto requestDto, User user) {
-        String dtoPw = passwordEncoder.encode(requestDto.getPassword());
         String newPw = passwordEncoder.encode(requestDto.getNewPw());
 
+        user = userRepository.findByUsername(user.getUsername()).orElseThrow();
+
         //기존 패스워드와 가져온 패스워드 비교
-        if(!passwordEncoder.matches(dtoPw, user.getPassword())){
+        if(!passwordEncoder.matches(requestDto.getPassword(), user.getPassword())){
             throw new CustomException(ErrorCode.NotMatchPassword);
         }
 
-        if(passwordEncoder.matches(dtoPw, newPw)) {
+        if (passwordEncoder.matches(requestDto.getNewPw(), user.getPassword())) {
             throw new CustomException(ErrorCode.NotAllowSamePassword);
         }
 
-        user.update(newPw);
+        user.setPassword(newPw);
+
         return ResponseDto.success("회원정보 수정 완료");
     }
 
@@ -106,12 +107,5 @@ public class UserService {
         userRepository.deleteById(userId);
 
         return ResponseDto.success("회원탈퇴 성공");
-    }
-
-    public void checkRole(User user, UserDetails userDetails) {
-        if((user.getRole() == UserRoleEnum.ADMIN) || (userDetails.getUsername() == user.getUsername())){
-            return;
-        }
-        throw new CustomException(ErrorCode.NoPermission);
     }
 }

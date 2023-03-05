@@ -2,9 +2,7 @@ package clone.cherrycoding.controller;
 
 import clone.cherrycoding.dto.ResponseDto;
 import clone.cherrycoding.dto.ReviewRequestDto;
-import clone.cherrycoding.entity.Lecture;
 import clone.cherrycoding.entity.User;
-import clone.cherrycoding.repository.LectureRepository;
 import clone.cherrycoding.security.UserDetailsImpl;
 import clone.cherrycoding.security.UserDetailsServiceImpl;
 import clone.cherrycoding.service.ReviewService;
