@@ -3,6 +3,7 @@ package clone.cherrycoding.security;
 import clone.cherrycoding.entity.User;
 import clone.cherrycoding.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -21,7 +22,8 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         return new UserDetailsImpl(user, user.getUsername());
     }
 
-    public User getUser(final UserDetailsImpl userDetails) {
+    public User getUser() {
+        UserDetailsImpl userDetails = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         if (userDetails != null) {
             return userDetails.getUser();
         }
