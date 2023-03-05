@@ -3,7 +3,7 @@ package clone.cherrycoding.config;
 import clone.cherrycoding.jwt.JwtAuthFilter;
 import clone.cherrycoding.jwt.JwtUtil;
 import lombok.RequiredArgsConstructor;
-정import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
