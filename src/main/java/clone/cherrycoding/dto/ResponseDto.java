@@ -20,8 +20,7 @@ public class ResponseDto<T> {
 
     @Getter
     @AllArgsConstructor
-    static class Error {
-        private final int statusCode;
-        private final String message;
+    public static class Error {
+        private final String errorMessage;
     }
 }

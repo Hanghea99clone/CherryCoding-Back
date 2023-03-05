@@ -7,6 +7,6 @@ import java.util.List;
 import java.util.Optional;
 
 public interface LectureRepository extends JpaRepository<Lecture, Long> {
-    List<Lecture> findAllByOrderByCreatedAtDesc();
+    Optional<List<Lecture>> findAllByOrderByCreatedAtDesc();
     Optional<Lecture> findByIdAndUserId(Long id, Long userId);
 }

@@ -4,6 +4,8 @@ import clone.cherrycoding.dto.*;
 import clone.cherrycoding.entity.Enroll;
 import clone.cherrycoding.entity.Lecture;
 import clone.cherrycoding.entity.User;
+import clone.cherrycoding.exception.CustomException;
+import clone.cherrycoding.exception.ErrorCode;
 import clone.cherrycoding.repository.EnrollRepository;
 import clone.cherrycoding.repository.LectureRepository;
 import clone.cherrycoding.repository.UserRepository;
@@ -33,7 +35,8 @@ public class LectureService {
 
     @Transactional
     public ResponseDto<List<LectureResponseDto>> getLecture() {
-        List<Lecture> lectureList = lectureRepository.findAllByOrderByCreatedAtDesc();
+        List<Lecture> lectureList = lectureRepository.findAllByOrderByCreatedAtDesc().
+                orElseThrow(()-> new CustomException(ErrorCode.NotFoundLecture));
         List<LectureResponseDto> dto = new ArrayList<>();
 
         for (Lecture lecture : lectureList) {
@@ -68,7 +71,8 @@ public class LectureService {
 
     @Transactional
     public ResponseDto<DetailResponseDto> getDetail(Long curriculumId, User user) {
-        Lecture lecture = lectureRepository.findById(curriculumId).orElseThrow(NullPointerException::new);
+        Lecture lecture = lectureRepository.findById(curriculumId).
+                orElseThrow(()-> new CustomException(ErrorCode.NotFoundLecture));
         DetailResponseDto dto = DetailResponseDto.of(lecture);
         boolean isEnrolled = false;
         if (user != null) {
@@ -103,7 +107,8 @@ public class LectureService {
     }
 
     public ResponseDto<String> update(Long curriculumId, LectureRequestDto requestDto, MultipartFile multipartFile, User user) throws IOException {
-        Lecture lecture = lectureRepository.findByIdAndUserId(curriculumId, user.getId()).orElseThrow(NullPointerException::new);
+        Lecture lecture = lectureRepository.findByIdAndUserId(curriculumId, user.getId()).
+                orElseThrow(()-> new CustomException(ErrorCode.NotFoundLecture));
         String imageUrl = s3Uploader.uploadFiles(multipartFile, "images");
         lecture.update(requestDto, imageUrl);
 
@@ -112,7 +117,8 @@ public class LectureService {
 
     @Transactional
     public ResponseDto<String> delete(Long curriculumId, User user) {
-        Lecture lecture = lectureRepository.findByIdAndUserId(curriculumId, user.getId()).orElseThrow(NullPointerException::new);
+        Lecture lecture = lectureRepository.findByIdAndUserId(curriculumId, user.getId()).
+                orElseThrow(()-> new CustomException(ErrorCode.NotFoundLecture));
         lectureRepository.deleteById(lecture.getId());
 
         return ResponseDto.success("강의 삭제 성공");

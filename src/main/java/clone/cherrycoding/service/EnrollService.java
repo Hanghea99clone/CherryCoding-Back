@@ -4,6 +4,8 @@ import clone.cherrycoding.dto.ResponseDto;
 import clone.cherrycoding.entity.Enroll;
 import clone.cherrycoding.entity.Lecture;
 import clone.cherrycoding.entity.User;
+import clone.cherrycoding.exception.CustomException;
+import clone.cherrycoding.exception.ErrorCode;
 import clone.cherrycoding.repository.EnrollRepository;
 import clone.cherrycoding.repository.LectureRepository;
 import lombok.RequiredArgsConstructor;
@@ -20,7 +22,8 @@ public class EnrollService {
 
     @Transactional
     public ResponseDto<String> enroll(Long curriculumId, User user) {
-        Lecture lecture = lectureRepository.findById(curriculumId).orElseThrow(NullPointerException::new);
+        Lecture lecture = lectureRepository.findById(curriculumId).
+                orElseThrow(()-> new CustomException(ErrorCode.NotFoundLecture));;
 
         if (enrollRepository.findByLectureIdAndUserId(curriculumId, user.getId()).isPresent()) {
             enrollRepository.deleteEnrollByLectureIdAndUserId(curriculumId, user.getId());

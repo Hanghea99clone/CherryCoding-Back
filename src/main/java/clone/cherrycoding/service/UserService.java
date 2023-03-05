@@ -3,6 +3,8 @@ package clone.cherrycoding.service;
 import clone.cherrycoding.dto.*;
 import clone.cherrycoding.entity.User;
 import clone.cherrycoding.entity.UserRoleEnum;
+import clone.cherrycoding.exception.CustomException;
+import clone.cherrycoding.exception.ErrorCode;
 import clone.cherrycoding.jwt.JwtUtil;
 import clone.cherrycoding.repository.UserRepository;
 import clone.cherrycoding.security.UserDetailsImpl;
@@ -31,18 +33,23 @@ public class UserService {
         String username = signupRequestDto.getUsername();
         String password = passwordEncoder.encode(signupRequestDto.getPassword());
 
-        Optional<User> foundUser = userRepository.findByUsername(signupRequestDto.getUsername());
+        Optional<User> foundUsername = userRepository.findByUsername(signupRequestDto.getUsername());
 
         // 예외처리 커스텀 할것
-        if(foundUser.isPresent()){
-            throw new IllegalArgumentException("중복된 사용자가 존재합니다.");
+        if(foundUsername.isPresent()){
+            throw new CustomException(ErrorCode.DuplicateUsername);
+        }
+
+        Optional<User> foundNickname = userRepository.findByNickname(signupRequestDto.getNickname());
+        if(foundNickname.isPresent()){
+            throw new CustomException(ErrorCode.DuplicatedNickname);
         }
 
         UserRoleEnum role = UserRoleEnum.USER;
         if(signupRequestDto.isAdmin()){
             if(!signupRequestDto.getAdminToken().equals(ADMIN_TOKEN)){
                 // 예외처리 커스텀 할것
-                throw new IllegalArgumentException("관리자 암호가 틀립니다.");
+                throw new CustomException(ErrorCode.NotMatchAdminPassword);
             }
             role = UserRoleEnum.ADMIN;
         }
@@ -59,11 +66,10 @@ public class UserService {
 
         //사용자 확인
         User user = userRepository.findByUsername(username).orElseThrow(
-                ()-> new IllegalArgumentException("회원을 찾을 수 없습니다.")
-        );
+                ()-> new CustomException(ErrorCode.NotFoundUser));
 
         if(!passwordEncoder.matches(password, user.getPassword())){
-            throw  new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
+            throw new CustomException(ErrorCode.NotMatchPassword);
         }
 
         HttpHeaders responseHeaders = new HttpHeaders();
@@ -82,7 +88,7 @@ public class UserService {
         String newPw = passwordEncoder.encode(requestDto.getNewPw());
 
         User user = userRepository.findById(userId).orElseThrow(
-                ()-> new IllegalArgumentException("해당 유저가 존재하지 않습니다.")
+                ()-> new CustomException(ErrorCode.NotFoundUser)
         );
 
         //admin 인지, 유저 아이디가 일치하는지 확인
@@ -94,7 +100,7 @@ public class UserService {
 //        }
         //기존 패스워드와 가져온 패스워드 비교
         if(passwordEncoder.matches(requestDto.getPassword(), newPw)){
-            throw  new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
+            throw new CustomException(ErrorCode.NotMatchPassword);
         }
 
         user.update(newPw);
@@ -112,6 +118,6 @@ public class UserService {
         if((user.getRole() == UserRoleEnum.ADMIN) || (userDetails.getUsername() == user.getUsername())){
             return;
         }
-        throw new IllegalArgumentException("해당 유저만 수정/삭제 가능합니다.");
+        throw new CustomException(ErrorCode.NoPermission);
     }
 }

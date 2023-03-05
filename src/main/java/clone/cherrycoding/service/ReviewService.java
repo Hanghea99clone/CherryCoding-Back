@@ -6,6 +6,8 @@ import clone.cherrycoding.entity.Lecture;
 import clone.cherrycoding.entity.Review;
 import clone.cherrycoding.entity.User;
 import clone.cherrycoding.entity.UserRoleEnum;
+import clone.cherrycoding.exception.CustomException;
+import clone.cherrycoding.exception.ErrorCode;
 import clone.cherrycoding.repository.LectureRepository;
 import clone.cherrycoding.repository.ReviewRepository;
 import clone.cherrycoding.repository.UserRepository;
@@ -25,7 +27,8 @@ public class ReviewService {
 
     @Transactional
     public ResponseDto<String> createReview(Long curriculumId, ReviewRequestDto requestDto, UserDetailsImpl userDetails) {
-        Lecture lecture = lectureRepository.findById(curriculumId).orElseThrow(NullPointerException::new);
+        Lecture lecture = lectureRepository.findById(curriculumId).
+                orElseThrow(()-> new CustomException(ErrorCode.NotFoundLecture));
         lecture.review(lecture.getReviewCnt() + 1);
         Review review = new Review(
                 requestDto.getReviewTitle(), requestDto.getReviewContent(), lecture, userDetails.getUser());
@@ -36,8 +39,10 @@ public class ReviewService {
 
     @Transactional
     public ResponseDto<String> updateReview(Long reviewId, ReviewRequestDto requestDto, UserDetailsImpl userDetails) {
-        User user = userRepository.findByUsername(userDetails.getUsername()).orElseThrow(NullPointerException::new);
-        Review review = reviewRepository.findById(reviewId).orElseThrow(NullPointerException::new);
+        User user = userRepository.findByUsername(userDetails.getUsername()).
+                orElseThrow(()-> new CustomException(ErrorCode.NotFoundUser));
+        Review review = reviewRepository.findById(reviewId).
+                orElseThrow(()-> new CustomException(ErrorCode.NotFoundReview));
 
         checkRole(user, userDetails);
         review.update(requestDto);
@@ -46,9 +51,12 @@ public class ReviewService {
 
     @Transactional
     public ResponseDto<String> deleteReview(Long reviewId, UserDetailsImpl userDetails) {
-        User user = userRepository.findByUsername(userDetails.getUsername()).orElseThrow(NullPointerException::new);
-        Review review = reviewRepository.findById(reviewId).orElseThrow(NullPointerException::new);
+        User user = userRepository.findByUsername(userDetails.getUsername()).
+                orElseThrow(()-> new CustomException(ErrorCode.NotFoundUser));
+        Review review = reviewRepository.findById(reviewId).
+                orElseThrow(()-> new CustomException(ErrorCode.NotFoundReview));
         review.getLecture().review(review.getLecture().getReviewCnt() - 1);
+
         checkRole(user, userDetails);
         reviewRepository.deleteById(reviewId);
         return ResponseDto.success("댓글 삭제 완료");
@@ -59,6 +67,6 @@ public class ReviewService {
         if((user.getRole() == UserRoleEnum.ADMIN) || (userDetails.getUsername() == user.getUsername())){
             return;
         }
-        throw new IllegalArgumentException("해당 유저만 수정/삭제 가능합니다.");
+        throw new CustomException(ErrorCode.NoPermission);
     }
 }
