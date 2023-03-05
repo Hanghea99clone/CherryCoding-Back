@@ -1,10 +1,12 @@
 package clone.cherrycoding.controller;
 
 import clone.cherrycoding.dto.*;
+import clone.cherrycoding.entity.User;
 import clone.cherrycoding.security.UserDetailsImpl;
 import clone.cherrycoding.security.UserDetailsServiceImpl;
 import clone.cherrycoding.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -34,13 +36,17 @@ public class UserController {
 
     @PutMapping("/update")
     @Operation(summary = "회원정보 수정")
-    public ResponseDto<String> update(@Valid @RequestBody UserRequestDto requestDto){
-        return userService.update(requestDto, userDetailsService.getUser());
+    public ResponseDto<String> update(@Valid @RequestBody UserRequestDto requestDto,@Parameter(hidden = true) @AuthenticationPrincipal UserDetailsImpl userDetails){
+        User user = userDetailsService.getUser(userDetails);
+
+        return userService.update(requestDto, user);
     }
 
     @DeleteMapping("/delete")
     @Operation(summary = "회원 탈퇴")
-    public ResponseDto<String> delete(){
-        return userService.delete(userDetailsService.getUser().getId());
+    public ResponseDto<String> delete(@Parameter(hidden = true) @AuthenticationPrincipal UserDetailsImpl userDetails){
+        User user = userDetailsService.getUser(userDetails);
+
+        return userService.delete(user.getId());
     }
 }

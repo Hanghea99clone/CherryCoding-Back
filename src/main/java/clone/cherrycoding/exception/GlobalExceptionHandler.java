@@ -1,10 +1,14 @@
 package clone.cherrycoding.exception;
 
+import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import clone.cherrycoding.dto.ResponseDto;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @ControllerAdvice
 public class GlobalExceptionHandler {
@@ -16,8 +20,11 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<ResponseDto.Error> validationException() {
+    public ResponseEntity<?> validationException(MethodArgumentNotValidException e) {
+        List<String> errors = e.getBindingResult().getFieldErrors().stream()
+                .map(DefaultMessageSourceResolvable::getDefaultMessage)
+                .collect(Collectors.toList());
         return ResponseEntity.status(ErrorCode.InValidException.getHttpStatus())
-                .body(new ResponseDto.Error(ErrorCode.InValidException.getMessage()));
+                .body(errors);
     }
 }
