@@ -3,15 +3,15 @@ package clone.cherrycoding.service;
 import clone.cherrycoding.dto.*;
 import clone.cherrycoding.entity.Enroll;
 import clone.cherrycoding.entity.Lecture;
+import clone.cherrycoding.entity.Review;
 import clone.cherrycoding.entity.User;
 import clone.cherrycoding.exception.CustomException;
 import clone.cherrycoding.exception.ErrorCode;
 import clone.cherrycoding.repository.EnrollRepository;
 import clone.cherrycoding.repository.LectureRepository;
-import clone.cherrycoding.repository.UserRepository;
+import clone.cherrycoding.repository.ReviewRepository;
 import clone.cherrycoding.s3.S3Uploader;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -29,21 +29,26 @@ import java.util.List;
 public class LectureService {
 
     private final LectureRepository lectureRepository;
+    private final ReviewRepository reviewRepository;
     private final EnrollRepository enrollRepository;
     private final S3Uploader s3Uploader;
-    private final UserRepository userRepository;
 
     @Transactional
-    public ResponseDto<List<LectureResponseDto>> getLecture() {
+    public ResponseDto<MainResponseDto> getLecture() {
         List<Lecture> lectureList = lectureRepository.findAllByOrderByCreatedAtDesc().
                 orElseThrow(()-> new CustomException(ErrorCode.NotFoundLecture));
         List<LectureResponseDto> dto = new ArrayList<>();
+
+        Sort sort = Sort.by(Sort.Direction.DESC, "createdAt");
+        Pageable pageable = PageRequest.of(0, 7, sort);
+        Page<Review> reviewPage = reviewRepository.findAll(pageable);
+        List<Review> reviews = reviewPage.getContent();
 
         for (Lecture lecture : lectureList) {
             dto.add(LectureResponseDto.of(lecture));
         }
 
-        return ResponseDto.success(dto);
+        return ResponseDto.success(new MainResponseDto(dto, reviews));
     }
 
     @Transactional

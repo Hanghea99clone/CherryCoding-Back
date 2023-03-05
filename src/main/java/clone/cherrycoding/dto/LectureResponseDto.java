@@ -1,23 +1,21 @@
 package clone.cherrycoding.dto;
 
 import clone.cherrycoding.entity.Lecture;
+import clone.cherrycoding.entity.Review;
 import lombok.Builder;
 import lombok.Getter;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Getter
+@Builder
 public class LectureResponseDto {
     private Long id;
     private String title;
     private String content;
     private String imageUrl;
-
-    @Builder
-    public LectureResponseDto(Long id, String title, String content, String imageUrl) {
-        this.id = id;
-        this.title = title;
-        this.content = content;
-        this.imageUrl = imageUrl;
-    }
+    private List<ReviewResponseDto> reviewList = new ArrayList<>();
 
     public static LectureResponseDto of(Lecture lecture) {
         return LectureResponseDto.builder()

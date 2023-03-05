@@ -26,7 +26,7 @@ public class LectureController {
 
     @GetMapping("/lecture")
     @Operation(summary = "홈페이지")
-    public ResponseDto<List<LectureResponseDto>> getLecture() {
+    public ResponseDto<MainResponseDto> getLecture() {
         return lectureService.getLecture();
     }
 
