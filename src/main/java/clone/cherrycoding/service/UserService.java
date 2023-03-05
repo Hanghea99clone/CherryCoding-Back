@@ -84,23 +84,17 @@ public class UserService {
     }
 
     @Transactional
-    public ResponseDto<String> update(Long userId, UserRequestDto requestDto, UserDetailsImpl userDetails) {
+    public ResponseDto<String> update(UserRequestDto requestDto, User user) {
+        String dtoPw = passwordEncoder.encode(requestDto.getPassword());
         String newPw = passwordEncoder.encode(requestDto.getNewPw());
 
-        User user = userRepository.findById(userId).orElseThrow(
-                ()-> new CustomException(ErrorCode.NotFoundUser)
-        );
-
-        //admin 인지, 유저 아이디가 일치하는지 확인
-        checkRole(user, userDetails);
-
-        // 관리자일 경우 비밀번호를 몰라도, 수정 가능
-//        if(user.getRole() == UserRoleEnum.ADMIN){
-//            user.update(UserRequestDto);
-//        }
         //기존 패스워드와 가져온 패스워드 비교
-        if(passwordEncoder.matches(requestDto.getPassword(), newPw)){
+        if(!passwordEncoder.matches(dtoPw, user.getPassword())){
             throw new CustomException(ErrorCode.NotMatchPassword);
+        }
+
+        if(passwordEncoder.matches(dtoPw, newPw)) {
+            throw new CustomException(ErrorCode.NotAllowSamePassword);
         }
 
         user.update(newPw);

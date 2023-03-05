@@ -2,6 +2,7 @@ package clone.cherrycoding.controller;
 
 import clone.cherrycoding.dto.*;
 import clone.cherrycoding.security.UserDetailsImpl;
+import clone.cherrycoding.security.UserDetailsServiceImpl;
 import clone.cherrycoding.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
@@ -17,6 +18,7 @@ import javax.validation.Valid;
 public class UserController {
 
     private final UserService userService;
+    private final UserDetailsServiceImpl userDetailsService;
 
     @PostMapping("/signup")
     @Operation(summary = "회원 가입")
@@ -30,15 +32,15 @@ public class UserController {
         return userService.login(loginRequestDto);
     }
 
-    @PutMapping("/{userId}")
+    @PutMapping("/update")
     @Operation(summary = "회원정보 수정")
-    public ResponseDto<String> update(@PathVariable Long userId, @Valid @RequestBody UserRequestDto requestDto, @AuthenticationPrincipal UserDetailsImpl userDetails){
-        return userService.update(userId, requestDto, userDetails);
+    public ResponseDto<String> update(@Valid @RequestBody UserRequestDto requestDto){
+        return userService.update(requestDto, userDetailsService.getUser());
     }
 
-    @DeleteMapping("/{userId}")
+    @DeleteMapping("/delete")
     @Operation(summary = "회원 탈퇴")
-    public ResponseDto<String> delete(@PathVariable Long userId){
-        return userService.delete(userId);
+    public ResponseDto<String> delete(){
+        return userService.delete(userDetailsService.getUser().getId());
     }
 }

@@ -10,6 +10,7 @@ public enum ErrorCode {
     UnAuthorized(HttpStatus.UNAUTHORIZED, "로그인을 해주세요."),
     NotFoundUser(HttpStatus.BAD_REQUEST, "아이디가 존재하지 않습니다."),
     NotMatchPassword(HttpStatus.BAD_REQUEST, "비밀번호가 일치하지 않습니다."),
+    NotAllowSamePassword(HttpStatus.BAD_REQUEST, "이전과 동일한 비밀번호입니다."),
     NotMatchAdminPassword(HttpStatus.BAD_REQUEST, "관리자 암호가 일치하지 않습니다."),
     DuplicateUsername(HttpStatus.BAD_REQUEST, "이미 존재하는 아이디 입니다."),
     DuplicatedNickname(HttpStatus.BAD_REQUEST, "이미 존재하는 닉네임 입니다."),
