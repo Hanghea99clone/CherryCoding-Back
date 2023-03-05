@@ -7,6 +7,7 @@ import clone.cherrycoding.security.UserDetailsServiceImpl;
 import clone.cherrycoding.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.security.SecurityRequirements;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -24,12 +25,14 @@ public class UserController {
 
     @PostMapping("/signup")
     @Operation(summary = "회원 가입")
+    @SecurityRequirements()
     public ResponseDto<String> signup(@Valid @RequestBody SignupRequestDto signupRequestDto) {
         return userService.signup(signupRequestDto);
     }
 
     @PostMapping("/login")
     @Operation(summary = "로그인")
+    @SecurityRequirements()
     public ResponseEntity<ResponseDto<LoginResponseDto>> login(@RequestBody LoginRequestDto loginRequestDto) {
         return userService.login(loginRequestDto);
     }

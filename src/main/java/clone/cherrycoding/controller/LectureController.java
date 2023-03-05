@@ -7,6 +7,7 @@ import clone.cherrycoding.security.UserDetailsServiceImpl;
 import clone.cherrycoding.service.LectureService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.security.SecurityRequirements;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -26,6 +27,7 @@ public class LectureController {
 
     @GetMapping("/lecture")
     @Operation(summary = "홈페이지")
+    @SecurityRequirements()
     public ResponseDto<MainResponseDto> getLecture() {
         return lectureService.getLecture();
     }
@@ -57,12 +59,15 @@ public class LectureController {
         return lectureService.getUserCurriculum(user);
     }
 
-    @PostMapping(value = "/lecture", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PostMapping(value = "/lecture", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
     @Operation(summary = "강좌 추가")
-    public ResponseDto<String> addLecture(@RequestPart LectureRequestDto requestDto,
+    public ResponseDto<String> addLecture(@RequestPart(value = "title") String title,
+                                          @RequestPart(value = "content") String content,
+                                          @RequestPart(value = "price") String price,
                                           @RequestPart(value = "image") MultipartFile multipartFile,
                                           @Parameter(hidden = true) @AuthenticationPrincipal UserDetailsImpl userDetails) throws IOException {
         User user = userDetailsService.getUser(userDetails);
+        LectureRequestDto requestDto = new LectureRequestDto(title, content, Integer.parseInt(price));
 
         return lectureService.add(requestDto, multipartFile, user);
     }
@@ -70,10 +75,13 @@ public class LectureController {
     @PutMapping(value = "/curriculum/{curriculumId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @Operation(summary = "강좌 수정")
     public ResponseDto<String> updateLecture(@PathVariable Long curriculumId,
-                                             @RequestPart LectureRequestDto requestDto,
+                                             @RequestPart(value = "title") String title,
+                                             @RequestPart(value = "content") String content,
+                                             @RequestPart(value = "price") String price,
                                              @RequestPart(value = "image") MultipartFile multipartFile,
                                              @Parameter(hidden = true) @AuthenticationPrincipal UserDetailsImpl userDetails) throws IOException {
         User user = userDetailsService.getUser(userDetails);
+        LectureRequestDto requestDto = new LectureRequestDto(title, content, Integer.parseInt(price));
 
         return lectureService.update(curriculumId, requestDto, multipartFile, user);
     }
