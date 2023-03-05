@@ -104,17 +104,18 @@ public class LectureService {
     }
 
     @Transactional
-    public ResponseDto<String> add(LectureRequestDto requestDto, MultipartFile multipartFile, User user) throws IOException {
-        String imageUrl = s3Uploader.uploadFiles(multipartFile, "images");
+    public ResponseDto<String> add(LectureRequestDto requestDto, User user) throws IOException {
+        String imageUrl = s3Uploader.uploadFiles(requestDto.getMultipartFile(), "images");
         lectureRepository.save(new Lecture(requestDto, imageUrl, user));
 
         return ResponseDto.success("강의 등록 성공");
     }
 
-    public ResponseDto<String> update(Long curriculumId, LectureRequestDto requestDto, MultipartFile multipartFile, User user) throws IOException {
+    @Transactional
+    public ResponseDto<String> update(Long curriculumId, LectureRequestDto requestDto, User user) throws IOException {
         Lecture lecture = lectureRepository.findByIdAndUserId(curriculumId, user.getId()).
                 orElseThrow(()-> new CustomException(ErrorCode.NotFoundLecture));
-        String imageUrl = s3Uploader.uploadFiles(multipartFile, "images");
+        String imageUrl = s3Uploader.uploadFiles(requestDto.getMultipartFile(), "images");
         lecture.update(requestDto, imageUrl);
 
         return ResponseDto.success("강의 수정 성공");

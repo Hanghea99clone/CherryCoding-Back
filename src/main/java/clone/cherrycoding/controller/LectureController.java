@@ -12,7 +12,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.List;
@@ -61,29 +60,21 @@ public class LectureController {
 
     @PostMapping(value = "/lecture", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
     @Operation(summary = "강좌 추가")
-    public ResponseDto<String> addLecture(@RequestPart(value = "title") String title,
-                                          @RequestPart(value = "content") String content,
-                                          @RequestPart(value = "price") String price,
-                                          @RequestPart(value = "image") MultipartFile multipartFile,
+    public ResponseDto<String> addLecture(@ModelAttribute LectureRequestDto requestDto,
                                           @Parameter(hidden = true) @AuthenticationPrincipal UserDetailsImpl userDetails) throws IOException {
         User user = userDetailsService.getUser(userDetails);
-        LectureRequestDto requestDto = new LectureRequestDto(title, content, Integer.parseInt(price));
 
-        return lectureService.add(requestDto, multipartFile, user);
+        return lectureService.add(requestDto, user);
     }
 
     @PutMapping(value = "/curriculum/{curriculumId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @Operation(summary = "강좌 수정")
     public ResponseDto<String> updateLecture(@PathVariable Long curriculumId,
-                                             @RequestPart(value = "title") String title,
-                                             @RequestPart(value = "content") String content,
-                                             @RequestPart(value = "price") String price,
-                                             @RequestPart(value = "image") MultipartFile multipartFile,
+                                             @ModelAttribute LectureRequestDto requestDto,
                                              @Parameter(hidden = true) @AuthenticationPrincipal UserDetailsImpl userDetails) throws IOException {
         User user = userDetailsService.getUser(userDetails);
-        LectureRequestDto requestDto = new LectureRequestDto(title, content, Integer.parseInt(price));
 
-        return lectureService.update(curriculumId, requestDto, multipartFile, user);
+        return lectureService.update(curriculumId, requestDto, user);
     }
 
     @DeleteMapping("/curriculum/{curriculumId}")
