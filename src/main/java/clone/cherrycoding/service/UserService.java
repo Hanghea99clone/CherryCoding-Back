@@ -79,7 +79,7 @@ public class UserService {
 
         return ResponseEntity.ok()
                 .headers(responseHeaders)
-                .body(ResponseDto.success(LoginResponseDto.of(user.getNickname(), isAdmin)));
+                .body(ResponseDto.success(LoginResponseDto.of(user.getUsername(), user.getNickname(), isAdmin)));
     }
 
     @Transactional
